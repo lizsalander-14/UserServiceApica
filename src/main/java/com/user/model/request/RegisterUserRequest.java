@@ -1,5 +1,6 @@
 package com.user.model.request;
 
+import com.user.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,5 @@ public class RegisterUserRequest {
     private String password;
     private String firstName;
     private String lastName;
+    private Role role;
 }

@@ -16,6 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -33,6 +36,11 @@ public class UserServiceImpl implements UserService {
     @Value("${kafka.topic.user.events}")
     private String userEventTopic;
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Override
     public UserDetailsResponse registerUser(RegisterUserRequest registerUserRequest) throws MyCustomException {
         User user = userRepository.findByEmail(registerUserRequest.getEmail());
@@ -41,7 +49,8 @@ public class UserServiceImpl implements UserService {
             throw new MyCustomException("User already exists");
         }
         user = new User();
-        BeanUtils.copyProperties(registerUserRequest, user);
+        BeanUtils.copyProperties(registerUserRequest, user, "password");
+        user.setPassword(passwordEncoder().encode(registerUserRequest.getPassword()));
         userRepository.save(user);
         sendUserEvent(user, UserActionType.REGISTER);
         return new UserDetailsResponse(user);

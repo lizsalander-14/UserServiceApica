@@ -1,5 +1,6 @@
 package com.user.entity;
 
+import com.user.model.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -33,6 +34,10 @@ public class User {
 
     @Column(name = "LAST_NAME")
     private String lastName;
+
+    @Column(name = "ROLE")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(name = "CREATED_ON")
     @CreationTimestamp
